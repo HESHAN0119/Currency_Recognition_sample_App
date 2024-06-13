@@ -11,6 +11,7 @@ import androidx.camera.core.PreviewConfig;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.app.Activity;
@@ -61,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
     TextureView textureView;
     ImageView imageView;
     TextView resultText;
-    int imageSize = 240;
+    int imageSize = 128;
+    public File file;
     List<Integer> integerList = new ArrayList<>();
 
     @Override
@@ -116,6 +118,21 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        resultText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to navigate to the new activity
+                Intent intent = new Intent(MainActivity.this, Cal.class);
+
+                // Pass the value of resultText to the new activity
+                intent.putExtra("RESULT_VALUE", resultText.getText().toString());
+
+                // Start the new activity
+                startActivity(intent);
+            }
+        });
+
+
     }
 
     private void startCamera() {
@@ -146,12 +163,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 //                File file = new File(Environment.getExternalStoragePublicDirectory("Internal storage/DCIM/Camera/"), "CameraX" + System.currentTimeMillis() + ".jpg");
-                File file = createImageFile();
+               file = createImageFile();
                 imgCap.takePicture(file, new ImageCapture.OnImageSavedListener() {
                     @Override
                     public void onImageSaved(@NonNull File file) {
                         String msg= "Pic Captured at" + file.getAbsolutePath();
-                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                         showCapturedImage(file);
                     }
 
@@ -175,8 +192,8 @@ public class MainActivity extends AppCompatActivity {
         // Load the captured image into the ImageView
         Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
-        int targetWidth = 240;
-        int targetHeight = 240;
+        int targetWidth = 128;
+        int targetHeight = 128;
 
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false);
 
@@ -186,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
         //resultText.setText(width);
         imageView.setImageBitmap(scaledBitmap);
         classifyImage(scaledBitmap);
+        file.delete();
 
     }
 
@@ -195,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
             Model model = Model.newInstance(getApplicationContext());
 
             // Creates inputs for reference.
-            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 240, 240, 3}, DataType.FLOAT32);
+            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 128, 128, 3}, DataType.FLOAT32);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
             byteBuffer.order(ByteOrder.nativeOrder());
 
@@ -203,8 +221,8 @@ public class MainActivity extends AppCompatActivity {
             image.getPixels(intValues, 0, image.getWidth(), 0, 0, image.getWidth(), image.getHeight());
             int pixel = 0;
             //iterate over each pixel and extract R, G, and B values. Add those values individually to the byte buffer.
-            for(int i = 0; i < imageSize; i ++){
-                for(int j = 0; j < imageSize; j++){
+            for (int i = 0; i < imageSize; i++) {
+                for (int j = 0; j < imageSize; j++) {
                     int val = intValues[pixel++]; // RGB
                     byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 255.f));
                     byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255.f));
@@ -221,17 +239,20 @@ public class MainActivity extends AppCompatActivity {
             float[] confidences = outputFeature0.getFloatArray();
             System.out.println(Arrays.toString(confidences));
             // find the index of the class with the biggest confidence.
-            int maxPos = 0;
-            float maxConfidence = 0;
+            int maxPos = 100;
+            float maxConfidence = 0.75f;
             for (int i = 0; i < confidences.length; i++) {
                 if (confidences[i] > maxConfidence) {
                     maxConfidence = confidences[i];
                     maxPos = i;
                 }
             }
-            int [] classes = {20, 20, 50,50, 100, 100,500, 500, 1000,1000, 5000, 5000};
+            if(maxPos==100){
+                textToSpeech2.speak(String.valueOf("Try Again"), TextToSpeech.QUEUE_FLUSH, null, null);
+            }else{
+            int[] classes = {1000, 1000, 100, 100, 20, 20, 5000, 5000, 500, 500, 50, 50};
             resultText.setText(String.valueOf(classes[maxPos]));
-            textToSpeech2.speak(String.valueOf(classes[maxPos]+" i"), TextToSpeech.QUEUE_FLUSH, null, null);
+            textToSpeech2.speak(String.valueOf(classes[maxPos] + " i"), TextToSpeech.QUEUE_FLUSH, null, null);
             integerList.add(classes[maxPos]);
 // Calculate and print the sum of the elements
             int sum = calculateSum(integerList);
@@ -246,10 +267,10 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     // Code to be executed after the delay
                     resultText.setText(String.valueOf(sum));
-                textToSpeech.speak("mulu ekathuve  "+String.valueOf(sum)+" i" ,TextToSpeech.QUEUE_FLUSH, null, null);
+                    textToSpeech.speak("mulu ekathuve  " + String.valueOf(sum) + " i", TextToSpeech.QUEUE_FLUSH, null, null);
                 }
             }, 500); // 500 milliseconds
-
+        }
 //            try {
 //                Thread.sleep(0, 1000000);// Sleep for 0.5 milliseconds
 //                resultText.setText(String.valueOf(sum));
@@ -273,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
         return sum;
     }
 
-    private File createImageFile() {
+    public File createImageFile() {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";

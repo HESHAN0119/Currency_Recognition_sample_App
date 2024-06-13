@@ -3,36 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="#FFFF19"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
 
-    <ImageButton
-        android:id="@+id/imgCapture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="92dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
-
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        app:layout_constraintBottom_toTopOf="@+id/imgCapture"
+        android:layout_marginStart="25dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tcView" />
+        app:layout_constraintTop_toBottomOf="@+id/tcView"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextureView
         android:id="@+id/tcView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="300dp"
+        android:layout_marginBottom="120dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -42,15 +39,23 @@
 
     <TextView
         android:id="@+id/result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginStart="0dp"
+        android:foregroundTint="#FFFFFF"
+        android:text="0"
+        android:textAlignment="center"
+        android:textColor="#F6FF00"
+        android:textSize="64sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:shadowRadius="10"
+        android:background="@drawable/shadow_rectangle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.83"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imgCapture"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/tcView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
