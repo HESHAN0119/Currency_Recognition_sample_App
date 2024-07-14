@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             if(maxPos==100){
-                textToSpeech2.speak(String.valueOf("Try Again"), TextToSpeech.QUEUE_FLUSH, null, null);
+                textToSpeech2.speak(String.valueOf("නැවත උත්සහ කරන්න"), TextToSpeech.QUEUE_FLUSH, null, null);
             }else{
             int[] classes = {1000, 1000, 100, 100, 20, 20, 5000, 5000, 500, 500, 50, 50};
             resultText.setText(String.valueOf(classes[maxPos]));
